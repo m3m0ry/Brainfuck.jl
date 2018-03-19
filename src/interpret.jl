@@ -99,7 +99,7 @@ function interpret!(op::Any, program::Program) # TODO this is dangerous. It may 
 end
 
 
-function brainfuck_interpret(s::String, stream_in::IO = STDIN, stream_out::IO = STDOUT)
+function brainfuck_interpret(s::String; stream_in::IO = STDIN, stream_out::IO = STDOUT)
     program = Program(lexer(s), 1, zeros(Int64, 30000), 1, stream_in, stream_out)
 
     while 1 <= program.program_pointer <= length(program.program)
@@ -107,6 +107,6 @@ function brainfuck_interpret(s::String, stream_in::IO = STDIN, stream_out::IO = 
     end
 end
 
-function brainfuck_interpret(file::IO, stream_in::IO = STDIN, stream_out::IO = STDOUT)
+function brainfuck_interpret(file::IO; stream_in::IO = STDIN, stream_out::IO = STDOUT)
     brainfuck_interpret(readstring(file), stream_in, stream_out)
 end
