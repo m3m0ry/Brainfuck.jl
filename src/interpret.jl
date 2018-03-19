@@ -1,4 +1,3 @@
-
 struct Op{T}
 end
 
@@ -95,7 +94,7 @@ function interpret!(::Type{Op{']'}}, program::Program)
     end
 end
 
-function interpret!(op::Any, program::Program)
+function interpret!(op::Any, program::Program) # TODO this is dangerous. It may create lots of functions
     error("Not such intstruction: $op")
 end
 
@@ -111,8 +110,3 @@ end
 function brainfuck_interpret(file::IO, stream_in::IO = STDIN, stream_out::IO = STDOUT)
     brainfuck_interpret(readstring(file), stream_in, stream_out)
 end
-
-brainfuck( """
-    Hello world!
-    ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
-    """)
