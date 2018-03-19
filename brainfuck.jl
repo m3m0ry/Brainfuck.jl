@@ -31,7 +31,7 @@ end
 
 function interpret!(::Type{Op{'+'}}, program::Program)
     #info("Op{'+'}")
-    program.data[program.data_pointer]+= 1
+    program.data[program.data_pointer] += 1
     program.program_pointer += 1
 end
 
@@ -58,10 +58,10 @@ function interpret!(::Type{Op{'['}}, program::Program)
     if program.data[program.data_pointer] == 0
         prog = program.program
         block = 0
-        for ptr = program.program_pointer+1:length(prog)
+        for ptr = program.program_pointer + 1:length(prog)
             if prog[ptr] == Op{']'}
                 if block == 0
-                    program.program_pointer = ptr+1
+                    program.program_pointer = ptr + 1
                     return
                 else
                     block -= 1
@@ -79,7 +79,7 @@ function interpret!(::Type{Op{']'}}, program::Program)
     #info("Op{']'}")
     prog = program.program
     block = 0
-    for ptr = program.program_pointer-1:-1:1
+    for ptr = program.program_pointer - 1:-1:1
         if prog[ptr] == Op{'['}
             if block == 0
                 program.program_pointer = ptr
