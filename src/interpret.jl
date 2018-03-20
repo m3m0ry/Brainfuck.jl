@@ -4,7 +4,7 @@ end
 mutable struct Program
     program::Array{DataType,1}
     program_pointer::Int64
-    data::Array{Int8,1}
+    data::Array{UInt8,1}
     data_pointer::Int64
     stream_in::IO
     stream_out::IO
@@ -19,43 +19,40 @@ function lexer(input::String)
 end
 
 function interpret!(::Type{Op{'>'}}, program::Program)
-    #info("Op{'>'}")
     program.data_pointer += 1
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{'<'}}, program::Program)
-    #info("Op{'<'}")
     program.data_pointer -= 1
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{'+'}}, program::Program)
-    #info("Op{'+'}")
-    program.data[program.data_pointer] += 1
+    program.data[program.data_pointer] += UInt8(1)
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{'-'}}, program::Program)
-    #info("Op{'-'}")
-    program.data[program.data_pointer] -= 1
+    program.data[program.data_pointer] -= UInt8(1)
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{'.'}}, program::Program)
-    #info("Op{'.'}")
-    print(program.stream_out, Char(program.data[program.data_pointer]))
+    write(program.stream_out, program.data[program.data_pointer])
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{','}}, program::Program)
-    #info("Op{','}")
-    program.data[program.data_pointer] = read(program.stream_in, Char)
+    if eof(program.stream_in)
+        program.data[program.data_pointer] = 0
+    else
+        program.data[program.data_pointer] = read(program.stream_in, Char)
+    end
     program.program_pointer += 1
 end
 
 function interpret!(::Type{Op{'['}}, program::Program)
-    #info("Op{'['}")
     if program.data[program.data_pointer] == 0
         prog = program.program
         block = 0
@@ -77,7 +74,6 @@ function interpret!(::Type{Op{'['}}, program::Program)
 end
 
 function interpret!(::Type{Op{']'}}, program::Program)
-    #info("Op{']'}")
     prog = program.program
     block = 0
     for ptr = program.program_pointer - 1:-1:1
@@ -108,5 +104,5 @@ function brainfuck_interpret(s::String; stream_in::IO = STDIN, stream_out::IO = 
 end
 
 function brainfuck_interpret(file::IO; stream_in::IO = STDIN, stream_out::IO = STDOUT)
-    brainfuck_interpret(readstring(file), stream_in, stream_out)
+    brainfuck_interpret(readstring(file), stream_in=stream_in, stream_out=stream_out)
 end
